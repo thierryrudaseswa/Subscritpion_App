@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">Subscription Plans</h2>
+    <div class="row">
+        {% for plan in plans %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ plan.name }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">${{ plan.price }}/month</h6>
+                    <p class="card-text">{{ plan.description }}</p>
+                    <ul class="list-unstyled">
+                        {% for feature in plan.features %}
+                        <li>✓ {{ feature }}</li>
+                        {% endfor %}
+                    </ul>
+                    <a href="{% url 'payment_process' plan.id %}" class="btn btn-primary">Subscribe Now</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %} 

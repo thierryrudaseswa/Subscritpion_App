@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="alert alert-warning">
+        <h4>Payment Cancelled</h4>
+        <p>Your payment was cancelled. No charges were made.</p>
+        <a href="{% url 'plan_list' %}" class="btn btn-primary">Back to Plans</a>
+    </div>
+</div>
+{% endblock %} 

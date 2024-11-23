@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}My Subscriptions{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">My Subscriptions</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    {% if subscriptions %}
+        <div class="row">
+            {% for subscription in subscriptions %}
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header {% if subscription.status == 'active' %}bg-success text-white{% endif %}">
+                            <h5 class="card-title mb-0">
+                                {{ subscription.plan.name }}
+                                <span class="badge {% if subscription.status == 'active' %}bg-light text-dark{% else %}bg-secondary{% endif %} float-end">
+                                    {{ subscription.get_status_display }}
+                                </span>
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <strong>Amount Paid:</strong> ${{ subscription.amount_paid }}
+                            </div>
+                            <div class="mb-3">
+                                <strong>Billing Cycle:</strong> {{ subscription.get_billing_cycle_display }}
+                            </div>
+                            <div class="mb-3">
+                                <strong>Start Date:</strong> {{ subscription.start_date|date:"M d, Y" }}
+                            </div>
+                            <div class="mb-3">
+                                <strong>End Date:</strong> {{ subscription.end_date|date:"M d, Y" }}
+                            </div>
+                            <div class="mb-3">
+                                <strong>Auto Renew:</strong> 
+                                {% if subscription.auto_renew %}
+                                    <span class="text-success">Yes</span>
+                                {% else %}
+                                    <span class="text-danger">No</span>
+                                {% endif %}
+                            </div>
+                            {% if subscription.notes %}
+                                <div class="mb-3">
+                                    <strong>Notes:</strong>
+                                    <p class="text-muted mb-0">{{ subscription.notes }}</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            You don't have any subscriptions yet. 
+            <a href="{% url 'plan_list' %}" class="alert-link">View available plans</a>
+        </div>
+    {% endif %}
+
+    <div class="mt-4">
+        <a href="{% url 'plan_list' %}" class="btn btn-primary">View Available Plans</a>
+    </div>
+</div>
+{% endblock %} 

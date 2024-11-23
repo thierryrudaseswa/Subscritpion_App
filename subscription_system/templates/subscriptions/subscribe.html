@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Subscribe to {{ plan.name }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">Complete Your Subscription</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="plan-summary p-3 bg-light rounded">
+                                <h4>{{ plan.name }}</h4>
+                                <h3 class="text-primary">${{ plan.price }}/{{ plan.get_billing_cycle_display }}</h3>
+                                <p class="text-muted">{{ plan.description }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Included Features:</h5>
+                            <ul class="list-unstyled">
+                                {% for feature in plan.features %}
+                                    <li class="mb-2">
+                                        <i class="fas fa-check-circle text-success me-2"></i>
+                                        {{ feature }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label class="form-label">Billing Cycle</label>
+                            <div class="row g-3">
+                                {% for value, label in form.billing_cycle.field.choices %}
+                                    <div class="col-md-4">
+                                        <div class="form-check card p-3 {% if forloop.first %}border-primary{% endif %}">
+                                            <input type="radio" 
+                                                   name="billing_cycle" 
+                                                   value="{{ value }}" 
+                                                   class="form-check-input" 
+                                                   id="cycle_{{ value }}"
+                                                   {% if forloop.first %}checked{% endif %}>
+                                            <label class="form-check-label w-100" for="cycle_{{ value }}">
+                                                <strong>{{ label }}</strong>
+                                                {% if value == 'annually' %}
+                                                    <span class="badge bg-success float-end">Save 20%</span>
+                                                {% endif %}
+                                            </label>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="form-check form-switch">
+                                {{ form.auto_renew }}
+                                <label class="form-check-label" for="{{ form.auto_renew.id_for_label }}">
+                                    Auto-renew subscription
+                                    <small class="text-muted d-block">
+                                        Your subscription will be automatically renewed at the end of each billing cycle
+                                    </small>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="{{ form.notes.id_for_label }}" class="form-label">
+                                Additional Notes (Optional)
+                            </label>
+                            {{ form.notes }}
+                            <div class="form-text">
+                                Any special requirements or questions? Let us know!
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{% url 'plan_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Plans
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                Complete Subscription
+                                <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <small class="text-muted">
+                    By subscribing, you agree to our Terms of Service and Privacy Policy
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Update price based on billing cycle
+    const basePricePerMonth = {{ plan.price }};
+    const priceDisplay = document.querySelector('.plan-summary h3');
+    
+    document.querySelectorAll('input[name="billing_cycle"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            let multiplier = 1;
+            let discount = 1;
+            
+            switch(this.value) {
+                case 'quarterly':
+                    multiplier = 3;
+                    discount = 0.9; // 10% discount
+                    break;
+                case 'annually':
+                    multiplier = 12;
+                    discount = 0.8; // 20% discount
+                    break;
+            }
+            
+            const totalPrice = (basePricePerMonth * multiplier * discount).toFixed(2);
+            priceDisplay.textContent = `$${totalPrice}/${this.nextElementSibling.textContent.trim()}`;
+        });
+    });
+});
+</script>
+{% endblock %}
+{% endblock %} 

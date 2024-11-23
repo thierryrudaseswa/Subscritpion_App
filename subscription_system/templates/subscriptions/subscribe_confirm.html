@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Confirm Subscription{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="text-center">Confirm Your Subscription</h2>
+                </div>
+                <div class="card-body">
+                    <h3>{{ plan.name }}</h3>
+                    <p class="lead">${{ plan.price }}/month</p>
+                    <p>{{ plan.description }}</p>
+                    
+                    <h4>Features:</h4>
+                    <ul>
+                        {% for feature in plan.features %}
+                            <li>{{ feature }}</li>
+                        {% endfor %}
+                    </ul>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-primary">Confirm Subscription</button>
+                            <a href="{% url 'plan_list' %}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
